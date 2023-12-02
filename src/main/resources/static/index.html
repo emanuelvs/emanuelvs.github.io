@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Processos e Memória</title>
+    <script src="/lib/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/lib/bootstrap-5.3.2-dist/css/bootstrap.min.css">
+    <script src="/lib/bootstrap-5.3.2-dist/js/bootstrap.bundle.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@5.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<div class="container">
+    <div class="d-flex">
+        <div class="me-4">
+            <h6>Algorítmo de Escalonamento</h6>
+            <div class="form-check">
+                <input class="form-escalonamento" value="FIFO" type="radio" name="tipoEscalonamento" id="flexRadioDefault1" checked>
+                <label class="form-check-label" for="flexRadioDefault1">
+                    FIFO
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-escalonamento" value="SJF" type="radio" name="tipoEscalonamento" id="flexRadioDefault2" >
+                <label class="form-check-label" for="flexRadioDefault2">
+                    SJF
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-escalonamento" value="RoundRobin" type="radio" name="tipoEscalonamento" id="flexRadioDefault3" >
+                <label class="form-check-label" for="flexRadioDefault3">
+                    RoundRobin
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-escalonamento" value="EDF" type="radio" name="tipoEscalonamento" id="flexRadioDefault4" >
+                <label class="form-check-label" for="flexRadioDefault4">
+                    EDF
+                </label>
+            </div>
+        </div>
+        <div>
+        <h6>Algorítmo de Paginação</h6>
+        <div class="form-check">
+            <input class="form-paginacao" type="radio" name="tipoPaginacao" value="FIFO" id="flexRadioPaginacao1" checked>
+            <label class="form-check-label" for="flexRadioPaginacao1">
+                FIFO
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-paginacao" type="radio" name="tipoPaginacao" value="LRU" id="flexRadioPaginacao2">
+            <label class="form-check-label" for="flexRadioPaginacao2">
+                LRU
+            </label>
+        </div>
+    </div>
+
+
+    </div>
+    <div>
+        <!-- Botão para abrir o modal -->
+        <div class="d-flex align-items-center gap-2">
+            <h6>Total de Processos: <span id="totalProcessos">0</span></h6>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adicionarProcessoModal">Adicionar Processo</button>
+            <div><button type="button" class="btn btn-primary" onclick="submitInfoSistema()">Simular</button></div>
+        </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="adicionarProcessoModal" tabindex="-1" aria-labelledby="adicionarProcessoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="adicionarProcessoModalLabel">Adicionar Processo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex gap-1 align-items-end mb-3">
+                            <div>
+                                <label for="tChegada" class="form-label">Tempo de chegada</label>
+                                <input type="number" id="tChegada" class="form-control" min="0">
+                            </div>
+                            <div>
+                                <label for="tExecucao" class="form-label">Tempo de execução</label>
+                                <input type="number" id="tExecucao" class="form-control" min="1">
+                            </div>
+
+                            <div>
+                                <label for="deadline" class="form-label">Deadline</label>
+                                <input type="number" id="deadline" class="form-control" min="1">
+                            </div>
+
+                            <div>
+                                <label for="quantum" class="form-label">Quantum</label>
+                                <input type="number" id="quantum" class="form-control" min="0">
+                            </div>
+
+                            <div>
+                                <label for="sobrecarga" class="form-label">Sobrecarga</label>
+                                <input type="number" id="sobrecarga" class="form-control" min="0">
+                            </div>
+
+                            <div>
+                                <label for="nPaginas" class="form-label">N. Páginas</label>
+                                <input type="number" id="nPaginas" class="form-control" min="1" max="10">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="addProcesso()">Adicionar</button>
+                        </div>
+                        <div id="processosAdicionados"></div> <!-- Lista de processos adicionados -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--
+    <div>
+        <h6>Total de Processos: <span id="totalProcessos">0</span></h6>
+
+        <div class="d-flex gap-1 align-items-end mb-3">
+            <div>
+                <label for="tChegada" class="form-label">Tempo de chegada</label>
+                <input type="number" id="tChegada" class="form-control" min="0">
+            </div>
+
+            <div>
+                <label for="tExecucao" class="form-label">Tempo de execução</label>
+                <input type="number" id="tExecucao" class="form-control" min="1">
+            </div>
+
+            <div>
+                <label for="deadline" class="form-label">Deadline</label>
+                <input type="number" id="deadline" class="form-control" min="1">
+            </div>
+
+            <div>
+                <label for="quantum" class="form-label">Quantum</label>
+                <input type="number" id="quantum" class="form-control" min="0">
+            </div>
+
+            <div>
+                <label for="sobrecarga" class="form-label">Sobrecarga</label>
+                <input type="number" id="sobrecarga" class="form-control" min="0">
+            </div>
+
+            <div>
+                <label for="nPaginas" class="form-label">N. Páginas</label>
+                <input type="number" id="nPaginas" class="form-control" min="1" max="10">
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="addProcesso()">+</button>
+        </div>
+
+
+    </div>
+    -->
+</div>
+<div class="d-flex justify-content-center">
+    <div>
+        <label id="turnaround" class="ps-4">Turnaround: 0</label>
+        <canvas id="ganttChart" width="650" height="350"></canvas>
+        <h5 class="text-center">Memória Ram</h5>
+        <div class="memory-board card" id="memoryBoard">
+        </div>
+    </div>
+
+    <div>
+        <h5 class="text-center">Memória Virtual</h5>
+        <div class="memory-board card" id="virtualMemoryBoard">
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+
+    function renderMemoryBoard(numCells) {
+        const memoryBoard = document.getElementById('memoryBoard');
+
+        for (let i = 0; i < numCells; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('memory-cell');
+            cell.textContent = 'Vazio';
+            memoryBoard.appendChild(cell);
+        }
+    }
+
+    function renderVirtualMemoryBoard(numCells) {
+        const virtualMemoryBoard = document.getElementById('virtualMemoryBoard');
+
+        for (let i = 0; i < numCells; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('memory-cell');
+            cell.textContent = 'Vazio';
+            virtualMemoryBoard.appendChild(cell);
+        }
+    }
+
+    renderVirtualMemoryBoard(100);
+    renderMemoryBoard(50);
+
+
+</script>
+<script src="/lib/main.js"></script>
+</body>
+</html>

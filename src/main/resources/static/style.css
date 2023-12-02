@@ -1,0 +1,16 @@
+.memory-board {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* Ajuste o número de colunas conforme necessário */
+    gap: 5px;
+}
+
+.memory-cell {
+    white-space: pre-line;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
